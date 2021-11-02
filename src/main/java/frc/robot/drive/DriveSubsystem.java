@@ -15,8 +15,8 @@ import frc.robot.Constants.DriveConstants;
 public class DriveSubsystem extends SubsystemBase {
     private CANSparkMax motor = new CANSparkMax(DriveConstants.MOTOR_ID, MotorType.kBrushless);
 
-    private NetworkTableEntry rotationEntry;
-    private NetworkTableEntry marginEntry;
+    private NetworkTableEntry targetEntry;
+    private NetworkTableEntry tolaranceEntry;
     private NetworkTableEntry speedEntry;
 
     /** Creates a new DriveSubsystem. */
@@ -26,17 +26,17 @@ public class DriveSubsystem extends SubsystemBase {
         tab.addNumber("Current Ticks", this::getCurrent);
         tab.addNumber("Current Degrees", () -> getCurrent() % 1 * 360);
 
-        rotationEntry = tab.add("Wanted Degrees", 0).getEntry();
-        tab.addNumber("Wanted Ticks", this::getWanted);
+        targetEntry = tab.add("Target Degrees", 0).getEntry();
+        tab.addNumber("Target Ticks", this::getTarget);
 
-        marginEntry = tab.add("Margin Degrees", 0).getEntry();
+        tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
         speedEntry = tab.add("Speed", 0).getEntry();
 
         motor.getEncoder().setPosition(0);
     }
 
-    public double getWanted() {
-        return rotationEntry.getDouble(0) / 360 % 1;
+    public double getTarget() {
+        return targetEntry.getDouble(0) / 360 % 1;
     }
 
     public double getCurrent() {
@@ -44,11 +44,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getDifference() {
-        return getWanted() - getCurrent();
+        return getTarget() - getCurrent();
     }
 
-    public double getErrorMargin() {
-        return marginEntry.getDouble(0) / 360 % 1;
+    public double getTolorance() {
+        return tolaranceEntry.getDouble(0) / 360 % 1;
     }
 
     public double getSpeed() {

@@ -27,6 +27,6 @@ public class Rotate extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(drive.getDifference()) < drive.getErrorMargin();
+        return Math.abs(drive.getDifference()) < drive.getTolorance();
     }
 }
