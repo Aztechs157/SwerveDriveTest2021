@@ -32,6 +32,10 @@ public class DriveSubsystem extends SubsystemBase {
         tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
         speedEntry = tab.add("Speed", 0).getEntry();
 
+        resetEncoder();
+    }
+
+    public void resetEncoder() {
         motor.getEncoder().setPosition(0);
     }
 
@@ -43,20 +47,20 @@ public class DriveSubsystem extends SubsystemBase {
         return motor.getEncoder().getPosition() % 1;
     }
 
-    public double getDifference() {
-        return getTarget() - getCurrent();
-    }
-
     public double getTolorance() {
         return tolaranceEntry.getDouble(0) / 360 % 1;
     }
 
-    public double getSpeed() {
+    private double getSpeed() {
         return speedEntry.getDouble(0);
     }
 
-    public void startMotor(final double speed) {
-        motor.set(speed);
+    public void startMotorPositive() {
+        motor.set(getSpeed());
+    }
+
+    public void startMotorNegative() {
+        motor.set(-getSpeed());
     }
 
     public void stopMotor() {

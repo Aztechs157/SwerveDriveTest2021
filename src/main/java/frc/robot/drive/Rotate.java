@@ -4,6 +4,7 @@
 
 package frc.robot.drive;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Rotate extends CommandBase {
@@ -13,11 +14,30 @@ public class Rotate extends CommandBase {
     public Rotate(final DriveSubsystem drive) {
         this.drive = drive;
         addRequirements(drive);
+        Shuffleboard.getTab("Debug").addNumber("Difference", () -> getDifference() * 360);
+    }
+
+    public double getDifference() {
+        var difference = drive.getTarget() - drive.getCurrent();
+
+        if (difference > 180) {
+            return difference - 360;
+        }
+
+        if (difference < -180) {
+            return difference + 360;
+        }
+
+        return difference;
     }
 
     @Override
     public void initialize() {
-        drive.startMotor(Math.copySign(drive.getSpeed(), drive.getDifference()));
+        if (getDifference() > 0) {
+            drive.startMotorPositive();
+        } else {
+            drive.startMotorNegative();
+        }
     }
 
     @Override
@@ -27,6 +47,6 @@ public class Rotate extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(drive.getDifference()) < drive.getTolorance();
+        return Math.abs(getDifference()) < drive.getTolorance();
     }
 }

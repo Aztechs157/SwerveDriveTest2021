@@ -40,6 +40,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         new JoystickButton(controller, 1).whenPressed(new Rotate(driveSubsystem));
+        new JoystickButton(controller, 8).whenPressed(driveSubsystem::resetEncoder, driveSubsystem);
     }
 
     /**
