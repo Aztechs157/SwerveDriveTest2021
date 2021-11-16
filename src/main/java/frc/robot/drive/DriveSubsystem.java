@@ -4,6 +4,8 @@
 
 package frc.robot.drive;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -11,9 +13,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotContainer;
 
 public class DriveSubsystem extends SubsystemBase {
     private CANSparkMax motor = new CANSparkMax(DriveConstants.MOTOR_ID, MotorType.kBrushless);
+    private TalonSRX encoder = new TalonSRX(DriveConstants.ENCODER_ID);
 
     private NetworkTableEntry targetEntry;
     private NetworkTableEntry tolaranceEntry;
@@ -31,6 +35,8 @@ public class DriveSubsystem extends SubsystemBase {
 
         tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
         speedEntry = tab.add("Speed", 0).getEntry();
+
+        tab.addNumber("Absolute Econder", encoder.getSensorCollection()::getPulseWidthPosition);
 
         resetEncoder();
     }
@@ -65,5 +71,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void stopMotor() {
         motor.set(0);
+    }
+
+    // Temporary Communication Test for the Talon SRX
+    public void talonIndicator() {
+        encoder.set(ControlMode.PercentOutput, RobotContainer.controller.getY());
     }
 }

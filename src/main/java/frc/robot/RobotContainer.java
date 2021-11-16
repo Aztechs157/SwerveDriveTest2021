@@ -10,6 +10,7 @@ import frc.robot.drive.DriveSubsystem;
 import frc.robot.drive.Rotate;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.DriveConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -19,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final XboxController controller = new XboxController(0);
+    public final static XboxController controller = new XboxController(DriveConstants.CONTROLLER_ID);
 
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem driveSubsystem = new DriveSubsystem();

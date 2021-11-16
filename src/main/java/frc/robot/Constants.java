@@ -17,5 +17,7 @@ package frc.robot;
 public final class Constants {
     public static final class DriveConstants {
         public static final int MOTOR_ID = 2;
+        public static final int ENCODER_ID = 20;
+        public static final int CONTROLLER_ID = 0;
     }
 }
