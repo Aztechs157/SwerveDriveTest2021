@@ -10,10 +10,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.RobotContainer;
 
 public class DriveSubsystem extends SubsystemBase {
     private CANSparkMax motor = new CANSparkMax(DriveConstants.MOTOR_ID, MotorType.kBrushless);
@@ -22,9 +24,12 @@ public class DriveSubsystem extends SubsystemBase {
     private NetworkTableEntry targetEntry;
     private NetworkTableEntry tolaranceEntry;
     private NetworkTableEntry speedEntry;
+    private XboxController controller;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem() {
+    public DriveSubsystem(XboxController controller) {
+        this.controller = controller;
+
         var tab = Shuffleboard.getTab("Debug");
 
         tab.addNumber("Current Ticks", this::getCurrent);
@@ -36,9 +41,11 @@ public class DriveSubsystem extends SubsystemBase {
         tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
         speedEntry = tab.add("Speed", 0).getEntry();
 
-        tab.addNumber("Absolute Econder", encoder.getSensorCollection()::getPulseWidthPosition);
+        tab.addNumber("Absolute Econder", encoder.getSensorCollection()::getAnalogIn);
 
         resetEncoder();
+
+        setDefaultCommand(new RunCommand(this::talonIndicator, this));
     }
 
     public void resetEncoder() {
@@ -50,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double getCurrent() {
-        return motor.getEncoder().getPosition() % 1;
+        return (motor.getEncoder().getPosition() / 69.33) % 1;
     }
 
     public double getTolorance() {
@@ -75,6 +82,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Temporary Communication Test for the Talon SRX
     public void talonIndicator() {
-        encoder.set(ControlMode.PercentOutput, RobotContainer.controller.getY());
+        encoder.set(ControlMode.PercentOutput, controller.getY(Hand.kLeft));
     }
 }
