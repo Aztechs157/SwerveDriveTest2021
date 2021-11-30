@@ -41,7 +41,7 @@ public class DriveSubsystem extends SubsystemBase {
         tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
         speedEntry = tab.add("Speed", 0).getEntry();
 
-        tab.addNumber("Absolute Econder", encoder.getSensorCollection()::getAnalogIn);
+        tab.addNumber("Absolute Encoder", encoder.getSensorCollection()::getAnalogIn);
 
         resetEncoder();
 

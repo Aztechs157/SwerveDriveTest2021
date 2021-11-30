@@ -18,14 +18,17 @@ public class Rotate extends CommandBase {
     }
 
     public double getDifference() {
+        // TARGET: 90, 355, 97
+        // CURRENT: 0, 0, 355
+        // DELTA: 90, -5 (355), 102 (-258)
         var difference = drive.getTarget() - drive.getCurrent();
 
-        if (difference > 180) {
-            return difference - 360;
+        if (difference > 0.5) {
+            return difference - 1;
         }
 
-        if (difference < -180) {
-            return difference + 360;
+        if (difference < -0.5) {
+            return difference + 1;
         }
 
         return difference;
