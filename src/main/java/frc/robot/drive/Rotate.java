@@ -4,17 +4,24 @@
 
 package frc.robot.drive;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class Rotate extends CommandBase {
     private DriveSubsystem drive;
+    private PIDController pid = new PIDController(0, 0, 0);
 
     /** Creates a new Rotate. */
     public Rotate(final DriveSubsystem drive) {
         this.drive = drive;
         addRequirements(drive);
-        Shuffleboard.getTab("Debug").addNumber("Difference", () -> getDifference() * 360);
+
+        var tab = Shuffleboard.getTab("Debug");
+        tab.addNumber("Difference", () -> getDifference() * 360);
+        tab.add(pid);
     }
 
     public double getDifference() {
@@ -35,12 +42,9 @@ public class Rotate extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        if (getDifference() > 0) {
-            drive.startMotorPositive();
-        } else {
-            drive.startMotorNegative();
-        }
+    public void execute() {
+        var output = pid.calculate(drive.getCurrent(), getDifference());
+        drive.setMotor(MathUtil.clamp(output, -drive.getSpeed(), drive.getSpeed()));
     }
 
     @Override
@@ -48,8 +52,8 @@ public class Rotate extends CommandBase {
         drive.stopMotor();
     }
 
-    @Override
-    public boolean isFinished() {
-        return Math.abs(getDifference()) < drive.getTolorance();
-    }
+    // @Override
+    // public boolean isFinished() {
+    // return Math.abs(getDifference()) < drive.getTolorance();
+    // }
 }

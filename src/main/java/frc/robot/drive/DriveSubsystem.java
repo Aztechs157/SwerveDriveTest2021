@@ -35,7 +35,8 @@ public class DriveSubsystem extends SubsystemBase {
         tab.addNumber("Current Ticks", this::getCurrent);
         tab.addNumber("Current Degrees", () -> getCurrent() % 1 * 360);
 
-        targetEntry = tab.add("Target Degrees", 0).getEntry();
+        // targetEntry = tab.add("Target Degrees", 0).getEntry();
+        tab.addNumber("Target Degrees", this::degreesFromController);
         tab.addNumber("Target Ticks", this::getTarget);
 
         tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
@@ -52,8 +53,15 @@ public class DriveSubsystem extends SubsystemBase {
         motor.getEncoder().setPosition(0);
     }
 
+    private double degreesFromController() {
+        var x = controller.getRawAxis(0);
+        var y = controller.getRawAxis(1);
+        return Math.toDegrees(Math.atan2(y, x)) + 180;
+    }
+
     public double getTarget() {
-        return targetEntry.getDouble(0) / 360 % 1;
+        // return targetEntry.getDouble(0) / 360 % 1;
+        return degreesFromController() / 360 % 1;
     }
 
     public double getCurrent() {
@@ -64,8 +72,12 @@ public class DriveSubsystem extends SubsystemBase {
         return tolaranceEntry.getDouble(0) / 360 % 1;
     }
 
-    private double getSpeed() {
+    public double getSpeed() {
         return speedEntry.getDouble(0);
+    }
+
+    public void setMotor(final double speed) {
+        motor.set(speed);
     }
 
     public void startMotorPositive() {
