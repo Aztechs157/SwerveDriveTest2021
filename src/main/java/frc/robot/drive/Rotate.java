@@ -19,6 +19,8 @@ public class Rotate extends CommandBase {
         this.drive = drive;
         addRequirements(drive);
 
+        pid.enableContinuousInput(0, 1);
+
         var tab = Shuffleboard.getTab("Debug");
         tab.addNumber("Difference", () -> getDifference() * 360);
         tab.add(pid);
@@ -41,9 +43,18 @@ public class Rotate extends CommandBase {
         return difference;
     }
 
+    // @Override
+    // public void initialize() {
+    // if (getDifference() > 0) {
+    // drive.startMotorPositive();
+    // } else {
+    // drive.startMotorNegative();
+    // }
+    // }
+
     @Override
     public void execute() {
-        var output = pid.calculate(drive.getCurrent(), getDifference());
+        var output = pid.calculate(drive.getCurrent(), drive.getTarget());
         drive.setMotor(MathUtil.clamp(output, -drive.getSpeed(), drive.getSpeed()));
     }
 
