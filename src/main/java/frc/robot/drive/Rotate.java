@@ -7,7 +7,6 @@ package frc.robot.drive;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class Rotate extends CommandBase {
     private DriveSubsystem drive;
@@ -26,8 +25,8 @@ public class Rotate extends CommandBase {
 
     @Override
     public void execute() {
-        var output = pid.calculate(drive.getCurrent(), drive.getTarget());
-        drive.setMotor(MathUtil.clamp(output, -drive.getSpeed(), drive.getSpeed()));
+        var speed = pid.calculate(drive.getCurrent(), drive.getTarget());
+        drive.setMotor(speed);
     }
 
     @Override

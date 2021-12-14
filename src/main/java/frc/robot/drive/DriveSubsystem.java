@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -22,8 +23,8 @@ public class DriveSubsystem extends SubsystemBase {
     private TalonSRX encoder = new TalonSRX(DriveConstants.ENCODER_ID);
 
     private NetworkTableEntry targetEntry;
-    private NetworkTableEntry tolaranceEntry;
-    private NetworkTableEntry speedEntry;
+    private NetworkTableEntry maxSpeedEntry;
+
     private XboxController controller;
 
     /** Creates a new DriveSubsystem. */
@@ -39,8 +40,7 @@ public class DriveSubsystem extends SubsystemBase {
         tab.addNumber("Target Degrees", this::degreesFromController);
         tab.addNumber("Target Ticks", this::getTarget);
 
-        tolaranceEntry = tab.add("Tolarance Degrees", 0).getEntry();
-        speedEntry = tab.add("Speed", 0).getEntry();
+        maxSpeedEntry = tab.add("Max Speed", 0).getEntry();
 
         tab.addNumber("Absolute Encoder", encoder.getSensorCollection()::getAnalogIn);
 
@@ -68,24 +68,13 @@ public class DriveSubsystem extends SubsystemBase {
         return (motor.getEncoder().getPosition() / 69.33) % 1;
     }
 
-    public double getTolorance() {
-        return tolaranceEntry.getDouble(0) / 360 % 1;
-    }
-
-    public double getSpeed() {
-        return speedEntry.getDouble(0);
+    private double getMaxSpeed() {
+        return maxSpeedEntry.getDouble(0);
     }
 
     public void setMotor(final double speed) {
-        motor.set(speed);
-    }
-
-    public void startMotorPositive() {
-        motor.set(getSpeed());
-    }
-
-    public void startMotorNegative() {
-        motor.set(-getSpeed());
+        var output = MathUtil.clamp(speed, -getMaxSpeed(), getMaxSpeed());
+        motor.set(output);
     }
 
     public void stopMotor() {
