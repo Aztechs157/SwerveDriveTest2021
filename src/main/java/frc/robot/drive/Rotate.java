@@ -19,7 +19,7 @@ public class Rotate extends CommandBase {
         this.drive = drive;
         addRequirements(drive);
 
-        pid.enableContinuousInput(0, 1);
+        pid.enableContinuousInput(-0.5, 0.5);
 
         var tab = Shuffleboard.getTab("Debug");
         tab.addNumber("Difference", () -> getDifference() * 360);
