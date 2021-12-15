@@ -22,8 +22,8 @@ public final class Constants {
 
         public static final double GEAR_RATIO = 69.33;
 
-        public static final double kP = 0.00811;
-        public static final double kI = 0.01;
+        public static final double kP = 0.032;
+        public static final double kI = 0.0;
         public static final double kD = 0.001;
     }
 }
