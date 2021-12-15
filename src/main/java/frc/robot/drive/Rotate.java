@@ -7,10 +7,11 @@ package frc.robot.drive;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
 
 public class Rotate extends CommandBase {
     private DriveSubsystem drive;
-    private PIDController pid = new PIDController(0, 0, 0);
+    private PIDController pid = new PIDController(DriveConstants.kP, DriveConstants.kI, DriveConstants.kD);
 
     /** Creates a new Rotate. */
     public Rotate(final DriveSubsystem drive) {
