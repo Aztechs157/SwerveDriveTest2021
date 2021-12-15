@@ -40,7 +40,7 @@ public class RobotContainer {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(controller, 1).whenPressed(new Rotate(driveSubsystem));
+        new JoystickButton(controller, 1).whenHeld(new Rotate(driveSubsystem));
         new JoystickButton(controller, 8).whenPressed(driveSubsystem::resetEncoder, driveSubsystem);
     }
 

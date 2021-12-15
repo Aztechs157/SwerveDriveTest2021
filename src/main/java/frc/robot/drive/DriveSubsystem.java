@@ -22,7 +22,7 @@ public class DriveSubsystem extends SubsystemBase {
     private CANSparkMax motor = new CANSparkMax(DriveConstants.MOTOR_ID, MotorType.kBrushless);
     private TalonSRX encoder = new TalonSRX(DriveConstants.ENCODER_ID);
 
-    private NetworkTableEntry targetEntry;
+    private NetworkTableEntry manualTargetEntry;
     private NetworkTableEntry maxSpeedEntry;
 
     private XboxController controller;
@@ -33,12 +33,10 @@ public class DriveSubsystem extends SubsystemBase {
 
         var tab = Shuffleboard.getTab("Debug");
 
-        tab.addNumber("Current Ticks", this::getCurrent);
-        tab.addNumber("Current Degrees", () -> getCurrent() % 1 * 360);
+        tab.addNumber("Current", this::getCurrent);
 
-        // targetEntry = tab.add("Target Degrees", 0).getEntry();
-        tab.addNumber("Target Degrees", this::degreesFromController);
-        tab.addNumber("Target Ticks", this::getTarget);
+        manualTargetEntry = tab.add("Manual Target", 0).getEntry();
+        tab.addNumber("Controller Target", this::degreesFromController);
 
         maxSpeedEntry = tab.add("Max Speed", 0).getEntry();
 
@@ -53,19 +51,44 @@ public class DriveSubsystem extends SubsystemBase {
         motor.getEncoder().setPosition(0);
     }
 
+    /**
+     *
+     * @return Controller joystick rotation in the range of -180 to +180 degrees
+     */
     private double degreesFromController() {
         var x = controller.getRawAxis(0);
         var y = controller.getRawAxis(1);
-        return Math.toDegrees(Math.atan2(y, x)) + 180;
+        return Math.toDegrees(Math.atan2(y, x));
     }
 
+    /**
+     *
+     * @return Target rotation in the range of -180 to +180 degrees
+     */
     public double getTarget() {
         // return targetEntry.getDouble(0) / 360 % 1;
-        return degreesFromController() / 360 % 1;
+        return degreesFromController();
     }
 
+    /**
+     *
+     * @return Current rotation in the range of -180 to +180 degrees
+     */
     public double getCurrent() {
-        return (motor.getEncoder().getPosition() / 69.33) % 1;
+        var rotations = motor.getEncoder().getPosition() / DriveConstants.GEAR_RATIO;
+        // Get portion after decimal point
+        var fractional = rotations % 1;
+        var degrees = fractional * 360;
+
+        if (degrees > 180) {
+            return degrees - 360;
+        }
+
+        if (degrees < -180) {
+            return degrees + 360;
+        }
+
+        return degrees;
     }
 
     private double getMaxSpeed() {

@@ -19,5 +19,7 @@ public final class Constants {
         public static final int MOTOR_ID = 2;
         public static final int ENCODER_ID = 20;
         public static final int CONTROLLER_ID = 0;
+
+        public static final double GEAR_RATIO = 69.33;
     }
 }

@@ -17,16 +17,20 @@ public class Rotate extends CommandBase {
         this.drive = drive;
         addRequirements(drive);
 
-        pid.enableContinuousInput(-0.5, 0.5);
+        pid.enableContinuousInput(-180, 180);
 
         var tab = Shuffleboard.getTab("Debug");
         tab.add(pid);
+        tab.addNumber("Speed", this::getSpeed);
+    }
+
+    private double getSpeed() {
+        return pid.calculate(drive.getCurrent(), drive.getTarget());
     }
 
     @Override
     public void execute() {
-        var speed = pid.calculate(drive.getCurrent(), drive.getTarget());
-        drive.setMotor(speed);
+        drive.setMotor(getSpeed());
     }
 
     @Override
