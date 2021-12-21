@@ -4,6 +4,8 @@
 
 package frc.robot.drive;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -13,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -24,6 +27,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     private NetworkTableEntry manualTargetEntry;
     private NetworkTableEntry maxSpeedEntry;
+    private SendableChooser<DoubleSupplier> targetChooser = new SendableChooser<>();
 
     private XboxController controller;
 
@@ -33,14 +37,16 @@ public class DriveSubsystem extends SubsystemBase {
 
         var tab = Shuffleboard.getTab("Debug");
 
-        tab.addNumber("Current", this::getCurrent);
-
         manualTargetEntry = tab.add("Manual Target", 0).getEntry();
-        tab.addNumber("Controller Target", this::degreesFromController);
-
         maxSpeedEntry = tab.add("Max Speed", 0).getEntry();
 
+        tab.addNumber("Current", this::getCurrent);
+        tab.addNumber("Controller Target", this::degreesFromController);
         tab.addNumber("Absolute Encoder", encoder.getSensorCollection()::getAnalogIn);
+
+        targetChooser.setDefaultOption("Controller", this::degreesFromController);
+        targetChooser.addOption("Manual", this::getManualTarget);
+        tab.add("Target Chooser", targetChooser);
 
         resetEncoder();
 
@@ -63,11 +69,36 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      *
+     * @param degrees Degress 0 to 360 or -360 to 0
+     * @return Wrapped degrees from -180 to 180
+     */
+    private double wrapInput(double degrees) {
+        if (degrees > 180) {
+            return degrees - 360;
+        }
+
+        if (degrees < -180) {
+            return degrees + 360;
+        }
+
+        return degrees;
+    }
+
+    /**
+     *
+     * @return Degrees from Shuffleboard 0 to 360 or -360 to 360
+     */
+    private double getManualTarget() {
+        var degrees = manualTargetEntry.getDouble(0) % 360;
+        return wrapInput(degrees);
+    }
+
+    /**
+     *
      * @return Target rotation in the range of -180 to +180 degrees
      */
     public double getTarget() {
-        // return targetEntry.getDouble(0) / 360 % 1;
-        return degreesFromController();
+        return targetChooser.getSelected().getAsDouble();
     }
 
     /**
@@ -79,16 +110,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Get portion after decimal point
         var fractional = rotations % 1;
         var degrees = fractional * 360;
-
-        if (degrees > 180) {
-            return degrees - 360;
-        }
-
-        if (degrees < -180) {
-            return degrees + 360;
-        }
-
-        return degrees;
+        return wrapInput(degrees);
     }
 
     private double getMaxSpeed() {
