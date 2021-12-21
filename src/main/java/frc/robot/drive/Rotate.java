@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 
 public class Rotate extends CommandBase {
-    private DriveSubsystem drive;
-    private PIDController pid = new PIDController(DriveConstants.kP, DriveConstants.kI, DriveConstants.kD);
+    private final DriveSubsystem drive;
+    private final PIDController pid = new PIDController(DriveConstants.kP, DriveConstants.kI, DriveConstants.kD);
 
     /** Creates a new Rotate. */
     public Rotate(final DriveSubsystem drive) {
@@ -20,7 +20,7 @@ public class Rotate extends CommandBase {
 
         pid.enableContinuousInput(-180, 180);
 
-        var tab = Shuffleboard.getTab("Debug");
+        final var tab = Shuffleboard.getTab("Debug");
         tab.add(pid);
         tab.addNumber("Speed", this::getSpeed);
     }
@@ -35,7 +35,7 @@ public class Rotate extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         drive.stopMotor();
     }
 }

@@ -20,7 +20,7 @@ import frc.robot.Constants.DriveConstants;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private XboxController controller = new XboxController(DriveConstants.CONTROLLER_ID);
+    private final XboxController controller = new XboxController(DriveConstants.CONTROLLER_ID);
 
     // The robot's subsystems and commands are defined here...
     private final DriveSubsystem driveSubsystem = new DriveSubsystem(controller);

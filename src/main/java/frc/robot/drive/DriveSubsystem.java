@@ -22,20 +22,20 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
-    private CANSparkMax motor = new CANSparkMax(DriveConstants.MOTOR_ID, MotorType.kBrushless);
-    private TalonSRX encoder = new TalonSRX(DriveConstants.ENCODER_ID);
+    private final CANSparkMax motor = new CANSparkMax(DriveConstants.MOTOR_ID, MotorType.kBrushless);
+    private final TalonSRX encoder = new TalonSRX(DriveConstants.ENCODER_ID);
 
-    private NetworkTableEntry manualTargetEntry;
-    private NetworkTableEntry maxSpeedEntry;
-    private SendableChooser<DoubleSupplier> targetChooser = new SendableChooser<>();
+    private final NetworkTableEntry manualTargetEntry;
+    private final NetworkTableEntry maxSpeedEntry;
+    private final SendableChooser<DoubleSupplier> targetChooser = new SendableChooser<>();
 
-    private XboxController controller;
+    private final XboxController controller;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem(XboxController controller) {
+    public DriveSubsystem(final XboxController controller) {
         this.controller = controller;
 
-        var tab = Shuffleboard.getTab("Debug");
+        final var tab = Shuffleboard.getTab("Debug");
 
         manualTargetEntry = tab.add("Manual Target", 0).getEntry();
         maxSpeedEntry = tab.add("Max Speed", 0).getEntry();
@@ -62,8 +62,8 @@ public class DriveSubsystem extends SubsystemBase {
      * @return Controller joystick rotation in the range of -180 to +180 degrees
      */
     private double degreesFromController() {
-        var x = controller.getRawAxis(0);
-        var y = controller.getRawAxis(1);
+        final var x = controller.getRawAxis(0);
+        final var y = controller.getRawAxis(1);
         return Math.toDegrees(Math.atan2(y, x));
     }
 
@@ -72,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
      * @param degrees Degress 0 to 360 or -360 to 0
      * @return Wrapped degrees from -180 to 180
      */
-    private double wrapInput(double degrees) {
+    private double wrapInput(final double degrees) {
         if (degrees > 180) {
             return degrees - 360;
         }
@@ -89,7 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
      * @return Degrees from Shuffleboard 0 to 360 or -360 to 360
      */
     private double getManualTarget() {
-        var degrees = manualTargetEntry.getDouble(0) % 360;
+        final var degrees = manualTargetEntry.getDouble(0) % 360;
         return wrapInput(degrees);
     }
 
@@ -106,10 +106,10 @@ public class DriveSubsystem extends SubsystemBase {
      * @return Current rotation in the range of -180 to +180 degrees
      */
     public double getCurrent() {
-        var rotations = motor.getEncoder().getPosition() / DriveConstants.GEAR_RATIO;
+        final var rotations = motor.getEncoder().getPosition() / DriveConstants.GEAR_RATIO;
         // Get portion after decimal point
-        var fractional = rotations % 1;
-        var degrees = fractional * 360;
+        final var fractional = rotations % 1;
+        final var degrees = fractional * 360;
         return wrapInput(degrees);
     }
 
@@ -118,7 +118,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void setMotor(final double speed) {
-        var output = MathUtil.clamp(speed, -getMaxSpeed(), getMaxSpeed());
+        final var output = MathUtil.clamp(speed, -getMaxSpeed(), getMaxSpeed());
         motor.set(output);
     }
 
